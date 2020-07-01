@@ -1,5 +1,7 @@
 package com.bowling.play;
 
+import com.bowling.play.Importer.FileReaderService;
+import com.bowling.play.Importer.Impl.FileReaderServiceImpl;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -7,7 +9,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class BowlingApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(BowlingApplication.class, args);
+//		SpringApplication.run(BowlingApplication.class, args);
+		FileReaderService fileReaderService = new FileReaderServiceImpl();
+
+
 	}
 
 }
