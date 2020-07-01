@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 public class BowlingApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(BowlingApplication.class, args);
+
 		FileReaderService fileReaderService = new FileReaderServiceImpl();
 
 		if(args.length==0){
@@ -22,6 +22,7 @@ public class BowlingApplication {
 		Stream<String> lines = fileReaderService.readFile(args[0]);
 
 
+		SpringApplication.run(BowlingApplication.class, args);
 	}
 
 }

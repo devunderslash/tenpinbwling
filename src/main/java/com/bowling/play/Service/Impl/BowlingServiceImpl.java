@@ -29,7 +29,7 @@ public class BowlingServiceImpl implements BowlingService {
             } else if (play.isSpare()) {
                 total = calcSpareScore(play.getBall(), plays);
             } else {
-                total = calcPinDropScore(play.getBall(), plays);
+                total = calcNormalScore(play.getBall(), plays);
             }
             play.setTotalScore(String.valueOf(total));
         });
@@ -66,7 +66,7 @@ public class BowlingServiceImpl implements BowlingService {
         return total;
     }
 
-    private int calcPinDropScore(int round, List<Frame> frames) {
+    private int calcNormalScore(int round, List<Frame> frames) {
         int index = round - 1;
         int previousPlayScore = index != 0 ? Helper.getIntegerValue(frames.get(index - 1).getTotalScore()) : 0;
         Frame frame = frames.get(index);
