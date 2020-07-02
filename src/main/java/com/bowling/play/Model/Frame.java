@@ -17,6 +17,8 @@ public class Frame {
     private String totalScore;
     private int ball;
 
+    private boolean isOpen;
+
     public String getFirstBallScore() {
         return firstBallScore;
     }
@@ -64,6 +66,14 @@ public class Frame {
 
     public boolean isSpare() {
         return !this.isStrike() && Helper.getIntegerValue(this.firstBallScore) + Helper.getIntegerValue(this.secondBallScore) == 10 && this.ball < 10;
+    }
+
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    public void setOpen(boolean open) {
+        this.isOpen = open;
     }
 
 }

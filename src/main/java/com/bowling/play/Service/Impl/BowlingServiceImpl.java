@@ -4,21 +4,59 @@ import com.bowling.play.Model.Frame;
 import com.bowling.play.Service.BowlingService;
 import com.bowling.play.Utils.Helper;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class BowlingServiceImpl implements BowlingService {
 
-    @Override
-    public Map<String, List<Frame>> calcPlayScoresFromMap(Map<String, List<Frame>> playsMap) {
+    Frame currentFrame;
+    final String STRIKE = "10";
 
+    private Map<String, List<Frame>> buildFramesByPlayer(Map<String, List<String>> playsMap) {
+        Map<String, List<Frame>> plays = new HashMap<>();
         playsMap.forEach((name, values) -> {
-            List<Frame> frames = calcPlayScoresFromList(values);
-            playsMap.put(name, frames);
-        });
+            List<Frame> ballList = new ArrayList<>();
+            final int[] frame = {1};
 
-        return playsMap;
+            HashMap<Integer, String> ballsWithIndex = values
+                    .stream()
+                    .collect(HashMap<Integer, String>::new,
+                            (map, streamValue) -> map.put(map.size(), streamValue),
+                            (map, map2) -> {
+                            });
+
+            ballsWithIndex.forEach((k, v) -> {
+                String score = v.split(" ")[1];
+                if (k == 0) this.currentFrame = new Frame();
+                if ((!currentFrame.isOpen()) || k == 0) {
+                    currentFrame.setFirstBallScore(score);
+                    if (score.equals(STRIKE) && k < values.size() - 3) {
+                        currentFrame.setBall(frame[0]);
+                        frame[0]++;
+                        ballList.add(currentFrame);
+                        currentFrame = new Frame();
+                    } else {
+                        currentFrame.setOpen(true);
+                    }
+                } else if (k == values.size() - 1) {
+                    currentFrame.setFinalBallScore(score);
+                    currentFrame.setBall(frame[0]);
+                    frame[0]++;
+                    ballList.add(currentFrame);
+                } else {
+                    currentFrame.setSecondBallScore(score);
+                    if (k < values.size() - 2) {
+                        currentFrame.setBall(frame[0]);
+                        frame[0]++;
+                        ballList.add(currentFrame);
+                        currentFrame = new Frame();
+                    }
+                }
+            });
+            plays.put(name, ballList);
+        });
+        return plays;
     }
 
     private List<Frame> calcPlayScoresFromList(List<Frame> plays) {
@@ -75,8 +113,24 @@ public class BowlingServiceImpl implements BowlingService {
     }
 
     @Override
+    public Map<String, List<Frame>> calcPlayScoresFromMap(Map<String, List<Frame>> playsMap) {
+
+        playsMap.forEach((name, values) -> {
+            List<Frame> frames = calcPlayScoresFromList(values);
+            playsMap.put(name, frames);
+        });
+
+        return playsMap;
+    }
+
+    @Override
     public Map<String, List<Frame>> buildPlayListFromStream(Stream<String> lines) {
 
-        return null;
+
+        LinkedHashMap<String, List<String>> playsMap = lines.collect(
+                Collectors.groupingBy(s -> s.substring(0, s.indexOf(" ")), LinkedHashMap::new, Collectors.mapping(p -> p, //map name
+                        Collectors.toList())));
+
+        return this.buildFramesByPlayer(playsMap);
     }
 }
